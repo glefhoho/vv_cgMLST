@@ -2,7 +2,7 @@
 
 ## Description
 A core genome MLST (cgMLST) schema for Vibrio vulnificus containing 2705 loci,
-developed using chewBBACA.
+developed by Xiang Li (University of Tennessee) and Xiangyu Deng (University of Georgia) using chewBBACA.
 
 ## Schema Download
 Schema seed (~2 GB) is available on Zenodo: [DOI link]
@@ -17,7 +17,7 @@ chewBBACA.py AlleleCall \
   -i ./your_genomes/ \
   -g schema_seed/ \
   -o allele_results \
-  --cpu 8
+  --cpu 8 # change this based on your resources
 
 # Extract cgMLST at 95% completeness
 chewBBACA.py ExtractCgMLST \
