@@ -40,7 +40,7 @@ pip install chewbbaca
 
 ### 1. Download schema from Zenodo
 ```bash
-# Download and extract schema_seed from Zenodo link above
+# Download and extract schema_seed from Zenodo link above (need to unzip the file)
 ```
 
 ### 2. Allele calling
