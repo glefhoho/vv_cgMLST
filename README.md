@@ -10,7 +10,7 @@ Large files are hosted on Zenodo due to size constraints:
 
 | File | Description | Size | Link |
 |------|-------------|------|------|
-| `schema_seed/` | chewBBACA schema seed | ~2 GB | [Zenodo DOI] |
+| `schema_seed/` | chewBBACA schema seed | ~2 GB | DOI: 10.5281/zenodo.20128405 |
 | `presence_absence.tsv` | Loci presence/absence matrix | ~300 MB | DOI: 10.5281/zenodo.20127814 |
 
 ## Files in This Repository
