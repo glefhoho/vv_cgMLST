@@ -36,7 +36,7 @@ Installation:
 pip install chewbbaca
 ```
 
-## Usage
+## Usage Description
 
 ### 1. Download schema from Zenodo
 ```bash
@@ -58,6 +58,12 @@ chewBBACA.py ExtractCgMLST \
   -i allele_results/results_alleles.tsv \
   -o cgMLST_output \
   --t 0.95 --s 100
+```
+
+## Run Pipeline 
+
+```bash
+bash vv_cgMLST_pipeline.sh GCA_000123456.1 --cpu 8
 ```
 
 ## Citation
