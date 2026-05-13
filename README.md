@@ -17,8 +17,8 @@ Large files are hosted on Zenodo due to size constraints:
 | File | Description |
 |------|-------------|
 | `cgMLSTschema95.txt` | List of 2705 cgMLST loci (95% completeness threshold) |
-| `missing_loci_stats.tsv` | Missing loci statistics per genome |
-| `cgMLST.html` | Interactive visualization of cgMLST results |
+| `vv_cgMLST_pipeline.sh` | Automatic pipeline for direct use |
+| `README.md` | Read carefully about how to download data needed and run the pipeline |
 
 ## Schema Details
 - Organism: Vibrio vulnificus
@@ -36,7 +36,7 @@ Installation:
 pip install chewbbaca
 ```
 
-## Usage Description
+## Usage Description/Steps
 
 ### 1. Download schema from Zenodo
 ```bash
@@ -60,7 +60,7 @@ chewBBACA.py ExtractCgMLST \
   --t 0.95 --s 100
 ```
 
-## Run Pipeline 
+## Pipeline Usage
 
 ```bash
 bash vv_cgMLST_pipeline.sh GCA_000123456.1 --cpu 8
