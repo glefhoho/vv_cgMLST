@@ -29,7 +29,7 @@ Large files are hosted on Zenodo due to size constraints:
 
 ## Requirements
 - Python >= 3.7
-- chewBBACA >= 3.0
+- chewBBACA >= 3.5.3
 
 Installation:
 ```bash
