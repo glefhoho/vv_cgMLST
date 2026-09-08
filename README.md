@@ -1,205 +1,212 @@
-# vv_cgMLST — a core-genome MLST scheme for *Vibrio vulnificus*
+# *Vibrio vulnificus* cgMLST Schema (2,705 loci)
 
-A 2,705-locus cgMLST scheme derived from 2,900 publicly available *Vibrio vulnificus*
-genomes, plus a single-command pipeline for typing new isolates against it.
+A core genome multilocus sequence typing (cgMLST) schema for *Vibrio vulnificus*,
+built with [chewBBACA](https://github.com/B-UMMI/chewBBACA) v3.5.3 from 2,900 publicly
+available genome assemblies in the NCBI Pathogen Detection resource.
 
-[![Schema DOI](https://img.shields.io/badge/Zenodo-10.5281%2Fzenodo.20128405-blue)](https://doi.org/10.5281/zenodo.20128405)
-[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+To our knowledge no curated, publicly available cgMLST scheme for *V. vulnificus*
+exists in PubMLST or cgMLST.org; genotyping of the species has relied on the
+ten-locus MLST scheme of Bisharat *et al.* (2007). This repository provides the
+locus list, a typing script, and pointers to the archived schema so that the
+scheme can be used, tested and improved by others.
 
 ---
 
-## What this is
-
-*V. vulnificus* has no widely adopted public cgMLST scheme. This repository provides one,
-together with the tooling to apply it, so that allele profiles generated in different
-laboratories are directly comparable.
+## Schema at a glance
 
 | | |
 |---|---|
-| Core loci | **2,705** |
-| Presence threshold | 95% of input genomes |
-| Genomes used to define the core | 2,900 |
-| Seed schema (all loci) | 55,034 |
-| Allele caller | chewBBACA ≥ 3.5.3 |
-
-The scheme is distributed as two pieces: the **seed schema** (all 55,034 loci, hosted on
-Zenodo because of its size) and the **core locus list** (`cgMLSTschema95.txt`, in this
-repository). Allele calling is restricted to the 2,705 core loci at runtime via chewBBACA's
-`--gl` option, which is the mechanism chewBBACA provides for exactly this purpose.
+| Organism | *Vibrio vulnificus* |
+| cgMLST loci | **2,705** |
+| Locus presence threshold | 95% (`--t 0.95`) |
+| Construction set | 2,900 draft assemblies, NCBI Pathogen Detection (January 2026) |
+| Software | chewBBACA v3.5.3 (gene prediction by **Pyrodigal**, as used by chewBBACA ≥ 3.3.0) |
+| Licence | MIT (code) · CC BY 4.0 (archived data) |
 
 ---
 
-## Installation
+## Files
 
-### 1. Dependencies
+### In this repository
 
-```bash
-conda create -n chewBBACA -c bioconda -c conda-forge chewbbaca'>=3.5.3'
-conda activate chewBBACA
+| File | Description |
+|---|---|
+| `cgMLSTschema95.txt` | The 2,705 cgMLST loci (95% presence threshold) |
+| `vv_cgMLST_pipeline_v3.sh` | Typing pipeline — types a new assembly or NCBI accession against the scheme |
+| `README.md` | This file |
+| `LICENSE` | MIT |
 
-# only needed if you want to type genomes by NCBI accession
-conda install -c conda-forge ncbi-datasets-cli
-```
+### Archived on Zenodo (too large for GitHub)
 
-### 2. This repository
-
-```bash
-git clone https://github.com/glefhoho/vv_cgMLST.git
-cd vv_cgMLST
-```
-
-### 3. The schema
-
-```bash
-wget 'https://zenodo.org/records/20128405/files/schema_seed.zip?download=1' -O schema_seed.zip
-unzip schema_seed.zip          # creates ./schema_seed/
-```
-
-Sanity check — the schema directory must contain the hidden `.schema_config` file and a
-`short/` subdirectory:
-
-```bash
-ls -a schema_seed | head
-find schema_seed -maxdepth 1 -name '*.fasta' | wc -l
-wc -l cgMLSTschema95.txt        # 2705
-```
+| File | Description | Size | DOI |
+|---|---|---|---|
+| `schema_seed.zip` | chewBBACA schema seed — the representative allele sequence for every locus. **Required** to run the pipeline. Unzip before use. | 302 MB | [10.5281/zenodo.20128405](https://doi.org/10.5281/zenodo.20128405) |
+| `presence_absence.tsv` | Locus presence/absence matrix across the 2,900-genome construction set | 321 MB | [10.5281/zenodo.20127814](https://doi.org/10.5281/zenodo.20127814) |
 
 ---
 
-## Usage
+## Requirements
 
-### Typing your own assembly
-
-No NCBI tools required.
-
-```bash
-bash vv_cgMLST_pipeline.sh --fasta my_isolate.fna --cpu 16
-```
-
-A directory of assemblies works too — `.fna`, `.fa`, `.fasta`, optionally gzipped:
+- Python ≥ 3.7
+- chewBBACA ≥ 3.5.3
 
 ```bash
-bash vv_cgMLST_pipeline.sh --fasta my_assemblies/ --cpu 16
+pip install chewbbaca
 ```
 
-### Typing a genome from NCBI
-
-```bash
-bash vv_cgMLST_pipeline.sh GCA_000039765.1 --cpu 16
-```
-
-### Options
-
-```
---fasta PATH    assembly file or directory (mutually exclusive with an accession)
---cpu N         CPUs for allele calling                        [8]
---schema PATH   chewBBACA schema directory                     [./schema_seed]
---loci PATH     cgMLST locus list                              [./cgMLSTschema95.txt]
---out PATH      output directory                               [<sample>_cgMLST]
---name STR      sample name for the profile                    [derived from input]
-```
-
-### Runtime
-
-A single genome against the 2,705 core loci takes a few minutes on 8 CPUs. Calling against
-the full 55,034-locus seed schema (i.e. omitting `--gl`) takes roughly an hour per genome
-and produces profiles that are **not** comparable to the published matrix — the pipeline
-always restricts to the core list.
+The pipeline additionally uses the NCBI `datasets` command-line tool when you pass
+an assembly accession rather than a local file.
 
 ---
 
-## Output
+## Quick start
 
-```
-<sample>_cgMLST/
-├── cgmlst_profile.tsv     allele profile across the 2,705 core loci
-├── typing_summary.tsv     loci called and detection rate per genome
-├── genome/                the assembly as submitted to chewBBACA
-└── allele_call/           full chewBBACA AlleleCall output
-    ├── results_alleles.tsv
-    ├── results_statistics.tsv     EXC / INF / LNF / PLOT / ASM / ALM counts
-    └── ...
+**1. Download and unzip the schema seed** from the Zenodo record above.
+
+**2. Type a genome.** Either an NCBI assembly accession:
+
+```bash
+bash vv_cgMLST_pipeline_v3.sh GCA_000123456.1 --cpu 8
 ```
 
-`cgmlst_profile.tsv` has one row per genome and 2,705 allele columns in the same order as
-the published matrix, so it can be concatenated with the 2,900-genome profile table for
-distance calculation or clustering.
+or a local assembly / directory of assemblies:
 
-### Interpreting the detection rate
+```bash
+bash vv_cgMLST_pipeline_v3.sh ./my_assemblies/ --cpu 8
+```
 
-A good-quality *V. vulnificus* assembly typically calls **> 97%** of the 2,705 loci.
-Markedly lower values usually mean a fragmented assembly, contamination, or a non-target
-species. Inspect `results_statistics.tsv` for the breakdown: a high **LNF** (locus not
-found) count points to a different organism or a very incomplete assembly, while high
-**ASM/ALM** (allele smaller/larger than mode) counts point to assembly artefacts.
+The script performs four steps:
 
-The pipeline runs chewBBACA with `--no-inferred`, so novel alleles are reported as `INF-`
-but **never written back into the schema**. Your local copy of the schema stays identical
-to the published one, and results remain reproducible across users.
+1. **Validation** — checks that chewBBACA is installed and that the schema directory and locus list are present
+2. **Input preparation** — stages the assembly, downloading and decompressing it from NCBI if an accession was supplied
+3. **Allele calling** — restricted to the 2,705 cgMLST loci
+4. **Summary** — detection statistics and formatted output tables
+
+Set the schema path with the appropriate option if `schema_seed/` is not in the
+working directory.
 
 ---
 
-## How the scheme was built
+## What the pipeline runs
 
-Three chewBBACA v3.5.3 commands, on 2,900 *V. vulnificus* assemblies retrieved from NCBI:
+A single chewBBACA invocation is enough to obtain a cgMLST profile:
 
 ```bash
-# 1. build the seed schema from all genomes
-chewBBACA.py CreateSchema -i fasta_file/ -o vv_cgMLST_schema --cpu 32
-#    -> 55,034 loci
-
-# 2. call alleles for all 2,900 genomes against the seed schema
-chewBBACA.py AlleleCall -i fasta_file/ -g vv_cgMLST_schema/schema_seed \
-                        -o vv_alleles --cpu 32
-
-# 3. extract loci present in >= 95% of genomes
-chewBBACA.py ExtractCgMLST -i vv_alleles/results_alleles.tsv \
-                           -o vv_cgMLST_results --t 0.95 --s 100
-#    -> 2,705 core loci, listed in cgMLSTschema95.txt
+chewBBACA.py AlleleCall \
+    -i "$GENOME_DIR" \
+    -g "$SCHEMA_DIR" \
+    --gl cgMLSTschema95.txt \
+    -o "$ALLELE_DIR" \
+    --cpu 8 \
+    --no-inferred
 ```
 
-Step 3 also produced `presence_absence.tsv` (locus presence across all 2,900 genomes),
-archived separately at [10.5281/zenodo.20127814](https://doi.org/10.5281/zenodo.20127814).
+Two flags do the important work:
+
+- **`--gl cgMLSTschema95.txt`** restricts allele calling to the 2,705 core loci.
+  The schema seed contains the full candidate (wgMLST) locus set, so this both
+  speeds up the run and returns the cgMLST profile directly — `ExtractCgMLST` is
+  **not** needed when typing against the published scheme. Column order matches the
+  published 2,900-genome matrix, so profiles can be concatenated with it directly.
+
+- **`--no-inferred`** stops chewBBACA from writing novel alleles back into the
+  schema. Without it, every run mutates your local copy of the schema and the
+  scheme drifts apart between laboratories. With it, the deposited seed stays
+  byte-identical for everyone, so identifiers for alleles already in the seed are
+  directly comparable across installations.
+
+  Novel alleles are still detected and still receive an identifier in the local
+  profile — they are simply not added to the schema. Those identifiers are assigned
+  per run and are **not** comparable between laboratories. Only a shared nomenclature
+  server (Chewie-NS, PubMLST/BIGSdb) can fix that; see *Limitations*.
+
+---
+
+## How the schema was built
+
+The steps below are for reference and reproducibility. **You do not need to run them
+to type genomes** — download the schema seed instead.
+
+```bash
+# 1. Candidate wgMLST schema from 2,900 assemblies
+chewBBACA.py CreateSchema \
+    -i vv_genomes/ \
+    -o vv_cgMLST_schema \
+    --cpu 8
+
+# 2. Allele calling across the construction set
+chewBBACA.py AlleleCall \
+    -i vv_genomes/ \
+    -g vv_cgMLST_schema/schema_seed/ \
+    -o vv_alleles \
+    --cpu 8
+
+# 3. Extract the core locus set at a 95% presence threshold
+chewBBACA.py ExtractCgMLST \
+    -i vv_alleles/results_alleles.tsv \
+    -o vv_cgMLST_results \
+    --t 0.95 --s 100
+```
+
+Step 3 produced the 2,705 loci in `cgMLSTschema95.txt`.
+
+> **On `--s 100`:** this is the *iteration step size* for the core-genome-size curve —
+> how many profiles are added per iteration when ExtractCgMLST plots core genome size
+> against the number of genomes considered. It does **not** set a minimum genome count
+> and has no effect on which loci are retained. (An earlier version of this README
+> described it incorrectly.)
 
 ---
 
 ## Limitations
 
-Stated plainly, so users can judge fitness for their purpose:
+The scheme was produced with the chewBBACA default workflow. These are stated so that
+users know what they are getting:
 
-- **No assembly quality filtering** was applied to the 2,900 input genomes. Poor assemblies
-  in the input set will have inflated the apparent locus loss and therefore made the 95%
-  core slightly more conservative than it would otherwise be.
-- **No Prodigal training file** was used; gene prediction relied on chewBBACA's defaults.
-- **No paralog removal** beyond chewBBACA's built-in NIPH/NIPHEM flagging.
-- **No SchemaEvaluator or AlleleCallEvaluator** run, so per-locus quality metrics
-  (allele length variation, fragment rates) are not characterised.
-- **Loci are not functionally annotated** — locus identifiers are protein IDs from the
-  seed genome (GCA_000009745.1, strain YJ016) and carry no functional information.
-- **No congruence analysis against 7-gene MLST** has been performed.
-- **No external validation set**: the scheme has not been benchmarked on an independent
-  genome collection, and no clustering thresholds (e.g. allele distances defining an
-  outbreak cluster) are proposed. Users defining thresholds should validate them on their
-  own epidemiologically characterised isolates.
+- **No assembly quality filtering.** All 2,900 assemblies were used as retrieved from
+  NCBI Pathogen Detection.
+- **No paralog removal.** Loci flagged as paralogous were not excluded via
+  `ExtractCgMLST --r`. This is partly self-correcting, since chewBBACA assigns no allele
+  identifier to a paralogous hit (NIPH/NIPHEM) and such loci tend to fall below the 95%
+  threshold on their own — but it has not been verified.
+- **No species-specific training file.** Gene prediction used chewBBACA defaults
+  (per-genome training) rather than a single `--ptf` training file. The chewBBACA
+  documentation recommends supplying one; note that the training file would otherwise
+  be bundled into the schema and reused during allele calling.
+- **No formal schema evaluation.** `SchemaEvaluator` and `AlleleCallEvaluator` have not
+  been run.
+- **No locus annotation.** Loci carry chewBBACA identifiers only; no UniProt gene names
+  or product descriptions.
+- **No comparison with existing MLST**, and no discriminatory-power analysis
+  (Simpson's index of diversity).
+- **No external validation.** The loci were defined on the same 2,900 genomes, so call
+  rates measured on that set are optimistic by construction.
+- **No clustering threshold.** No allelic-distance cut-off for cluster or outbreak
+  definition is proposed; cut-offs from other species should not be assumed to apply.
 
-Contributions addressing any of these are welcome — please open an issue first.
+Contributions addressing any of these are welcome.
 
 ---
 
 ## Citation
 
-If you use this scheme, please cite the Zenodo archive and chewBBACA:
+If you use this schema, please cite:
 
-> Li X. *A 2,705-locus core-genome MLST scheme for* Vibrio vulnificus. Zenodo.
-> https://doi.org/10.5281/zenodo.20128405
+<!-- TODO: replace with the bioRxiv DOI once the preprint is posted -->
+> Li, X. A publicly available core genome multilocus sequence typing scheme for
+> *Vibrio vulnificus*. *bioRxiv* (2026). doi: TBD
 
-> Silva M, Machado MP, Silva DN, et al. chewBBACA: A complete suite for gene-by-gene
-> schema creation and strain identification. *Microb Genom.* 2018;4(3):e000166.
-> https://doi.org/10.1099/mgen.0.000166
+and the underlying tool:
+
+> Silva, M. *et al.* (2018). chewBBACA: A complete suite for gene-by-gene schema
+> creation and strain identification. *Microbial Genomics* 4(3), e000166.
+> doi:10.1099/mgen.0.000166
+
+Please also cite the Zenodo DOI of whichever archived object you used.
 
 ---
 
-## License
+## Licence
 
-MIT — see [LICENSE](LICENSE). The schema and derived data on Zenodo are released under
+MIT — see [LICENSE](LICENSE). Archived data objects on Zenodo are released under
 CC BY 4.0.
