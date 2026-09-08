@@ -193,7 +193,7 @@ Contributions addressing any of these are welcome.
 If you use this schema, please cite:
 
 <!-- TODO: replace with the bioRxiv DOI once the preprint is posted -->
-> Li, X. A publicly available core genome multilocus sequence typing scheme for
+> Zhan, Q, and Li, X. A publicly available core genome multilocus sequence typing scheme for
 > *Vibrio vulnificus*. *bioRxiv* (2026). doi: TBD
 
 and the underlying tool:
