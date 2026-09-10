@@ -17,7 +17,7 @@ scheme can be used, tested and improved by others.
 | | |
 |---|---|
 | Organism | *Vibrio vulnificus* |
-| cgMLST loci | **2,705** |
+| cgMLST loci | 2,705 |
 | Locus presence threshold | 95% (`--t 0.95`) |
 | Construction set | 2,900 draft assemblies, NCBI Pathogen Detection (January 2026) |
 | Software | chewBBACA v3.5.3 (gene prediction by Pyrodigal, as used by chewBBACA ≥ 3.3.0) |
