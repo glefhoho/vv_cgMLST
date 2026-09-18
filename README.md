@@ -194,7 +194,7 @@ If you use this schema, please cite:
 
 <!-- TODO: replace with the bioRxiv DOI once the preprint is posted -->
 > Zhan, Q., & Li, X. A publicly available core genome multilocus sequence typing scheme for
-> *Vibrio vulnificus*. *bioRxiv* (2026). doi: TBD
+> *Vibrio vulnificus*. *Access Microbiology* (2026). doi: https://doi.org/10.1099/acmi.0.001325.v1
 
 and the underlying tool:
 
